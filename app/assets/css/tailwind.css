@@ -1,0 +1,14 @@
+/* app/assets/css/tailwind.css */
+@import "tailwindcss";
+
+/* Define your custom theme variables so bg-base-900 exists */
+@theme {
+    --color-base-900: #0f1117;
+}
+
+/* Put your global styles in a layer */
+@layer base {
+    body {
+        @apply bg-base-900 text-zinc-200 antialiased;
+    }
+}
