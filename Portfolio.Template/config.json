@@ -1,0 +1,245 @@
+{
+    "contact": {
+        "links": [
+            {
+                "href": "mailto:hello@example.com",
+                "icon": "✉️",
+                "label": "Email"
+            },
+            {
+                "href": "https://www.linkedin.com/in/",
+                "icon": "💼",
+                "label": "LinkedIn",
+                "target": "_blank"
+            },
+            {
+                "href": "https://github.com/",
+                "icon": "🐙",
+                "label": "GitHub",
+                "target": "_blank"
+            }
+        ],
+        "sectionSubtitle": "Have a project in mind or want to collaborate? Feel free to reach out!",
+        "sectionTitle": "Let's Build Something Amazing"
+    },
+    "experience": [
+        {
+            "company": "Ceusters",
+            "location": "Antwerp, Belgium",
+            "period": "2021 → Now",
+            "role": "Lead Developer",
+            "summary": "Architecting the ReX ecosystem with .NET 9, Vue 3, and Azure Service Bus. Designing multi‑tenant modules for real estate management, implementing Peppol invoice delivery, and building scalable communication platforms.",
+            "technologies": [
+                ".NET 9",
+                "Vue 3",
+                "Azure SB",
+                "EF Core",
+                "SQL Server",
+                "Peppol UBL"
+            ]
+        },
+        {
+            "company": "TechConsult Group",
+            "location": "Brussels, Belgium",
+            "period": "2018 → 2021",
+            "role": "Senior Consultant",
+            "subExperiences": [
+                {
+                    "company": "Financial Services Corp",
+                    "location": "Brussels",
+                    "period": "2020 → 2021",
+                    "role": "Lead Developer",
+                    "summary": "Architected microservices platform for financial reporting. Implemented automated testing and CI/CD pipelines, improving deployment frequency by 300%.",
+                    "technologies": [
+                        ".NET Core",
+                        "Angular",
+                        "Docker",
+                        "Kubernetes",
+                        "Azure DevOps"
+                    ]
+                },
+                {
+                    "company": "PropTech Solutions",
+                    "location": "Amsterdam",
+                    "period": "2019 → 2020",
+                    "role": "Full-Stack Developer",
+                    "summary": "Developed custom property management solutions and integrated third-party APIs for rental platforms. Built responsive web applications with focus on user experience.",
+                    "technologies": [
+                        "Vue.js",
+                        "Node.js",
+                        "PostgreSQL",
+                        "Redis",
+                        "Docker"
+                    ]
+                },
+                {
+                    "company": "Healthcare Innovation Lab",
+                    "location": "Ghent",
+                    "period": "2018 → 2019",
+                    "role": "Frontend Specialist",
+                    "summary": "Created patient management dashboards and integrated with existing hospital systems. Focused on accessibility and GDPR compliance.",
+                    "technologies": [
+                        "Angular",
+                        "TypeScript",
+                        "RxJS",
+                        "Chart.js"
+                    ]
+                }
+            ],
+            "summary": "Leading full-stack development projects for enterprise clients across finance and real estate sectors. Specialized in cloud architecture and modern web applications.",
+            "technologies": [
+                ".NET Core",
+                "Angular",
+                "Vue.js",
+                "Azure",
+                "Docker"
+            ]
+        },
+        {
+            "company": "StartupTech",
+            "location": "Leuven, Belgium",
+            "period": "2016 → 2018",
+            "role": "Junior Developer",
+            "summary": "Started career building web applications for small businesses. Gained experience in full-stack development and learned modern development practices.",
+            "technologies": [
+                "C#",
+                "ASP.NET MVC",
+                "jQuery",
+                "SQL Server",
+                "Bootstrap"
+            ]
+        }
+    ],
+    "hero": {
+        "ctaButtons": [
+            {
+                "href": "#projects",
+                "label": "Explore My Work",
+                "style": "primary"
+            },
+            {
+                "href": "#contact",
+                "label": "Let's Connect",
+                "style": "secondary"
+            }
+        ]
+    },
+    "personal": {
+        "availability": {
+            "isAvailable": true,
+            "status": "Available for new opportunities"
+        },
+        "headline": "Building the",
+        "headlineHighlight": "Future of Tech",
+        "initials": "IE",
+        "name": "Ilias El Makrini",
+        "profileImage": "assets/profile.jpg",
+        "subtitle": "I'm <strong>Ilias El Makrini</strong>, a full‑stack engineer who architects scalable platforms connecting real estate, finance, and communication systems.",
+        "title": "Full-Stack Engineer"
+    },
+    "projects": [
+        {
+            "challenges": "The main challenge was designing a scalable multi-tenant architecture that could handle different business rules per tenant while maintaining performance and data isolation.",
+            "demoUrl": "https://rex-demo.example.com",
+            "description": "Enterprise real‑estate management suite integrating finance, leasing, and communication modules.",
+            "details": "A comprehensive real estate management platform built with modern cloud architecture. Features multi-tenant capabilities, advanced reporting, and seamless integrations with external services.",
+            "features": [
+                "Multi-tenant architecture with role-based access control",
+                "Real-time notifications via SignalR",
+                "Automated invoice processing with Peppol integration",
+                "Advanced financial reporting and analytics",
+                "Document management with Azure Blob Storage",
+                "RESTful APIs for third-party integrations"
+            ],
+            "githubUrl": "https://github.com/yourusername/rex-platform",
+            "results": "Successfully deployed across 15+ real estate companies, processing over 10,000 transactions monthly with 99.9% uptime.",
+            "slug": "rex-platform",
+            "tech": ".NET · Vue · Azure",
+            "title": "ReX Platform"
+        },
+        {
+            "challenges": "The main challenge was designing a scalable multi-tenant architecture that could handle different business rules per tenant while maintaining performance and data isolation.",
+            "demoUrl": "https://rex-demo.example.com",
+            "description": "Enterprise real‑estate management suite integrating finance, leasing, and communication modules.",
+            "details": "A comprehensive real estate management platform built with modern cloud architecture. Features multi-tenant capabilities, advanced reporting, and seamless integrations with external services.",
+            "features": [
+                "Multi-tenant architecture with role-based access control",
+                "Real-time notifications via SignalR",
+                "Automated invoice processing with Peppol integration",
+                "Advanced financial reporting and analytics",
+                "Document management with Azure Blob Storage",
+                "RESTful APIs for third-party integrations"
+            ],
+            "githubUrl": "https://github.com/yourusername/rex-platform",
+            "results": "Successfully deployed across 15+ real estate companies, processing over 10,000 transactions monthly with 99.9% uptime.",
+            "slug": "rex-platform",
+            "tech": ".NET · Vue · Azure",
+            "title": "ReX Platform"
+        },
+        {
+            "challenges": "The main challenge was designing a scalable multi-tenant architecture that could handle different business rules per tenant while maintaining performance and data isolation.",
+            "demoUrl": "https://rex-demo.example.com",
+            "description": "Enterprise real‑estate management suite integrating finance, leasing, and communication modules.",
+            "details": "A comprehensive real estate management platform built with modern cloud architecture. Features multi-tenant capabilities, advanced reporting, and seamless integrations with external services.",
+            "features": [
+                "Multi-tenant architecture with role-based access control",
+                "Real-time notifications via SignalR",
+                "Automated invoice processing with Peppol integration",
+                "Advanced financial reporting and analytics",
+                "Document management with Azure Blob Storage",
+                "RESTful APIs for third-party integrations"
+            ],
+            "githubUrl": "https://github.com/yourusername/rex-platform",
+            "results": "Successfully deployed across 15+ real estate companies, processing over 10,000 transactions monthly with 99.9% uptime.",
+            "slug": "rex-platform",
+            "tech": ".NET · Vue · Azure",
+            "title": "ReX Platform"
+        },
+        {
+            "challenges": "Implementing complex UBL validation rules while maintaining high throughput for batch processing of thousands of invoices.",
+            "description": "Peppol BIS UBL 3.0 invoicing pipeline with attachments, validations, and delivery tracking.",
+            "details": "A robust API service for processing Peppol electronic invoices according to UBL 3.0 standards. Handles validation, routing, and delivery confirmation for B2B transactions.",
+            "features": [
+                "UBL 3.0 schema validation",
+                "Asynchronous processing with Azure Service Bus",
+                "Delivery status tracking and notifications",
+                "Support for invoice attachments",
+                "Comprehensive audit logging",
+                "RESTful endpoints for integration"
+            ],
+            "githubUrl": "https://github.com/yourusername/peppol-api",
+            "results": "Processes 50,000+ invoices monthly with 99.8% successful delivery rate and average processing time under 2 seconds.",
+            "slug": "peppol-api",
+            "tech": ".NET · UBL · Azure Service Bus",
+            "title": "Peppol API"
+        },
+        {
+            "challenges": "Adapting Tailwind CSS classes for PDF generation while maintaining consistent layouts across different content lengths.",
+            "demoUrl": "https://templates-demo.example.com",
+            "description": "Tailwind‑styled, multi‑language PDF templates with advanced pagination and page‑break logic.",
+            "details": "A collection of professional PDF templates built with JSReport, featuring responsive design principles adapted for print media. Supports multiple languages and complex layouts.",
+            "features": [
+                "Tailwind CSS for consistent styling",
+                "Multi-language support with i18n",
+                "Advanced page break logic",
+                "Dynamic content rendering",
+                "Professional invoice and report layouts",
+                "Responsive design principles for print"
+            ],
+            "githubUrl": "https://github.com/yourusername/jsreport-templates",
+            "results": "Used by 25+ clients for generating over 100,000 documents monthly, with 40% reduction in template development time.",
+            "slug": "jsreport-templates",
+            "tech": "Node · Handlebars · Tailwind",
+            "title": "JSReport Templates"
+        }
+    ],
+    "techStack": [
+        "NET 9",
+        "EF Core",
+        "Azure",
+        "Vue 3",
+        "Rebus",
+        "SQL Server",
+        "TailwindCSS"
+    ]
+}
