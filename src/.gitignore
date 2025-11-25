@@ -53,3 +53,7 @@ temp/
 
 ## JetBrains Rider caches in subfolders
 **/.idea/
+
+## .NET
+bin/
+obj/

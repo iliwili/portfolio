@@ -1,0 +1,9 @@
+namespace Portfolio.Business.Extensions;
+
+public static class DateTimeExtensions
+{
+    public static DateOnly ToDateOnly(this DateTime datetime)
+    {
+        return new DateOnly(datetime.Year, datetime.Month, datetime.Day);
+    }
+}
