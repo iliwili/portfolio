@@ -1,6 +1,6 @@
-﻿using Portfolio.Business.Extensions;
+﻿﻿using Portfolio.Utils.Extensions;
 
-namespace Portfolio.Business.Utils;
+namespace Portfolio.Utils;
 
 public interface IDateTimeProvider
 {
@@ -10,5 +10,5 @@ public interface IDateTimeProvider
 
 public class DateTimeProvider : IDateTimeProvider
 {
-    public DateTime Now { get; } = DateTime.Now;
+    public DateTime Now => DateTime.UtcNow;
 }

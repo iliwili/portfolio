@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.Business.Utils;
+using Portfolio.Utils;
 
 namespace Portfolio.Api.Controllers;
 

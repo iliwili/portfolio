@@ -1,0 +1,20 @@
+using Portfolio.Dal.Utils;
+
+namespace Portfolio.Dal.Entities.Common;
+
+public class Entity : IConcurrencyTokenProperty
+{
+    // Internal
+    public int Id { get; set; }
+
+    // External
+    public string PublicId { get; set; } = default!;
+
+    public string CreatedBy { get; set; } = "SYSTEM";
+    public DateTime CreatedOn { get; set; }
+
+    public string? ModifiedBy { get; set; }
+    public DateTime? ModifiedOn { get; set; }
+
+    public Guid LockId { get; set; }
+}

@@ -1,4 +1,4 @@
-namespace Portfolio.Business.Extensions;
+namespace Portfolio.Utils.Extensions;
 
 public static class DateTimeExtensions
 {
