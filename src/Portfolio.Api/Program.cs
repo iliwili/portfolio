@@ -24,7 +24,6 @@ builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
-
 // CORS (Nuxt dashboard)
 builder.Services.AddCors(options =>
 {

@@ -4,6 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Configurations>Debug;Release</Configurations>
         <UserSecretsId>86266bfe-489c-477d-bf5a-0403cbca54d0</UserSecretsId>
     </PropertyGroup>
 
@@ -19,6 +20,10 @@
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.11" />
       <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
+      <PackageReference Include="NSwag.MSBuild" Version="14.6.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Scalar.AspNetCore" Version="2.11.0" />
     </ItemGroup>
 
@@ -27,4 +32,7 @@
       <ProjectReference Include="..\Portfolio.Dal\Portfolio.Dal.csproj" />
     </ItemGroup>
 
+    <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+        <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development;" Command="$(NSwagExe_Net90) run nswag.json /variables:Configuration=$(Configuration)"/>
+    </Target>
 </Project>

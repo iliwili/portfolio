@@ -1,5 +1,5 @@
 {
-  "name": "Portfolio-Dashboard",
+  "name": "portfolio-dashboard",
   "type": "module",
   "private": true,
   "scripts": {
@@ -14,9 +14,14 @@
     "@nuxt/fonts": "^0.12.1",
     "@nuxt/icon": "^2.1.0",
     "@nuxt/image": "^2.0.0",
+    "axios": "^1.13.2",
     "eslint": "^9.39.1",
+    "lodash": "^4.17.21",
     "nuxt": "^4.2.1",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.21"
   }
 }
