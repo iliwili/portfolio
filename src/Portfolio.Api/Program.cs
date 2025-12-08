@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Portfolio.Business.Auth.Services;
 using Portfolio.Dal;
+using Portfolio.Dal.Utils;
 using Portfolio.Utils;
 using Scalar.AspNetCore;
 
@@ -18,6 +20,10 @@ builder.Services.AddHttpContextAccessor();
 
 // Register utilities
 builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+// Register services
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // CORS (Nuxt dashboard)
 builder.Services.AddCors(options =>
@@ -55,8 +61,7 @@ builder.Services.AddOpenApiDocument((options, _) =>
     options.DocumentName = "v1";
 });
 
-
-builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddMediator(options => { options.ServiceLifetime = ServiceLifetime.Transient; });
 
 var app = builder.Build();
 
