@@ -57,3 +57,5 @@ temp/
 ## .NET
 bin/
 obj/
+
+.github/

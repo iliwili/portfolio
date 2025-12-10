@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+    <RouterView />
 </template>
+
+<script lang="ts" setup>
+import type { RouterView } from 'vue-router';
+
+</script>
