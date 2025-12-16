@@ -61,19 +61,26 @@ export class AuthClient {
                 }
             }
         }
-        if (status === 201) {
+        if (status === 200) {
             const _responseText = response.data;
-            let result201: any = null;
-            let resultData201  = _responseText;
-            result201 = AuthUserDto.fromJS(resultData201);
-            return Promise.resolve<AuthUserDto>(result201);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AuthUserDto.fromJS(resultData200);
+            return Promise.resolve<AuthUserDto>(result200);
 
         } else if (status === 400) {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -127,12 +134,19 @@ export class AuthClient {
             result200 = AuthUserDto.fromJS(resultData200);
             return Promise.resolve<AuthUserDto>(result200);
 
-        } else if (status === 401) {
+        } else if (status === 400) {
             const _responseText = response.data;
-            let result401: any = null;
-            let resultData401  = _responseText;
-            result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = ValidationProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 500) {
+            const _responseText = response.data;
+            let result500: any = null;
+            let resultData500  = _responseText;
+            result500 = ProblemDetails.fromJS(resultData500);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -174,9 +188,16 @@ export class AuthClient {
                 }
             }
         }
-        if (status === 200) {
+        if (status === 204) {
             const _responseText = response.data;
             return Promise.resolve<void>(null as any);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -285,8 +306,15 @@ export class AuthClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 500) {
+            const _responseText = response.data;
+            let result500: any = null;
+            let resultData500  = _responseText;
+            result500 = ProblemDetails.fromJS(resultData500);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -340,8 +368,15 @@ export class AuthClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 500) {
+            const _responseText = response.data;
+            let result500: any = null;
+            let resultData500  = _responseText;
+            result500 = ProblemDetails.fromJS(resultData500);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -524,6 +559,73 @@ export class PingClient {
     }
 }
 
+export class SlugClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    generateSlug(name: string | undefined, cancelToken?: CancelToken): Promise<string> {
+        let url_ = this.baseUrl + "/api/Slug/generate?";
+        if (name === null)
+            throw new globalThis.Error("The parameter 'name' cannot be null.");
+        else if (name !== undefined)
+            url_ += "name=" + encodeURIComponent("" + name) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGenerateSlug(_response);
+        });
+    }
+
+    protected processGenerateSlug(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
+}
+
 export class AuthUserDto {
     publicId!: string;
     firstName!: string;
@@ -659,6 +761,106 @@ export class ProblemDetails {
     }
 }
 
+export class HttpValidationProblemDetails extends ProblemDetails {
+    errors!: { [key: string]: string[]; };
+
+    [key: string]: any;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (this.errors as any)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+            else {
+                this.errors = null as any;
+            }
+        }
+    }
+
+    static override fromJS(data: any): HttpValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new HttpValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (data["errors"] as any)[key] = this.errors[key] !== undefined ? this.errors[key] : null as any;
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class ValidationProblemDetails extends HttpValidationProblemDetails {
+    errors!: { [key: string]: string[]; };
+
+    [key: string]: any;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (this.errors as any)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+            else {
+                this.errors = null as any;
+            }
+        }
+    }
+
+    static override fromJS(data: any): ValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (data["errors"] as any)[key] = this.errors[key] !== undefined ? this.errors[key] : null as any;
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
 export class RegisterRequest {
     firstName!: string;
     lastName!: string;
@@ -666,6 +868,7 @@ export class RegisterRequest {
     email!: string;
     password!: string;
     accountName!: string;
+    slug!: string;
 
     init(_data?: any) {
         if (_data) {
@@ -675,6 +878,7 @@ export class RegisterRequest {
             this.email = _data["email"] !== undefined ? _data["email"] : null as any;
             this.password = _data["password"] !== undefined ? _data["password"] : null as any;
             this.accountName = _data["accountName"] !== undefined ? _data["accountName"] : null as any;
+            this.slug = _data["slug"] !== undefined ? _data["slug"] : null as any;
         }
     }
 
@@ -693,6 +897,7 @@ export class RegisterRequest {
         data["email"] = this.email !== undefined ? this.email : null as any;
         data["password"] = this.password !== undefined ? this.password : null as any;
         data["accountName"] = this.accountName !== undefined ? this.accountName : null as any;
+        data["slug"] = this.slug !== undefined ? this.slug : null as any;
         return data;
     }
 }

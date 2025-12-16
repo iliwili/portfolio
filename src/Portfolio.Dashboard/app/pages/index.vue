@@ -1,5 +1,12 @@
 <template>
-  <div class="h-screen w-full bg-red-500">Index</div>
+  <div />
 </template>
 
-<script lang="ts" setup></script>
+<script setup lang="ts">
+// Redirect to accounts page (middleware will handle auth check)
+definePageMeta({
+  layout: false,
+})
+
+await navigateTo('/accounts')
+</script>

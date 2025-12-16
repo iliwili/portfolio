@@ -4,37 +4,39 @@ using Microsoft.Extensions.Logging;
 using Portfolio.Api.Models.Auth;
 using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Auth.Services;
-using Portfolio.Business.Utils;
+using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
 using Portfolio.Utils;
 
 namespace Portfolio.Business.Auth.Commands;
 
-public class Login(LoginRequest loginRequest) : ICommand<ApiResponse<AuthUserDto>>
+public class Login(LoginRequest loginRequest) : ICommand<AuthUserDto>
 {
     public LoginRequest Request { get; set; } = loginRequest;
 }
 
-public class LoginHandler(DatabaseContext databaseContext, ILogger<LoginHandler> logger, IDateTimeProvider dateTimeProvider, IAuthService authService) : ICommandHandler<Login, ApiResponse<AuthUserDto>>
+public class LoginHandler(DatabaseContext databaseContext, ILogger<LoginHandler> logger, IDateTimeProvider dateTimeProvider, IAuthService authService) : ICommandHandler<Login, AuthUserDto>
 {
-    public async ValueTask<ApiResponse<AuthUserDto>> Handle(Login command, CancellationToken cancellationToken)
+    public async ValueTask<AuthUserDto> Handle(Login command, CancellationToken cancellationToken)
     {
         try
         {
+            var email = command.Request.Email.Trim().ToLower();
+
             var user = await databaseContext.Users
                 .Include(u => u.AccountUsers)
                 .ThenInclude(au => au.Account)
-                .FirstOrDefaultAsync(u => u.Email.ToLower() == command.Request.Email.ToLower(), cancellationToken);
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email, cancellationToken);
 
-            if (user == null)
+            if (user is null)
             {
-                return ApiResponseFactory.BadRequest<AuthUserDto>("Invalid email or password");
+                throw new FieldException("email", "auth.email_not_registered");
             }
 
             if (!VerifyPassword(command.Request.Password, user.PasswordHash))
             {
-                return ApiResponseFactory.Error<AuthUserDto>("Invalid email or password");
+                throw new FieldException("password", "auth.invalid_credentials");
             }
 
             // Update last login
@@ -44,7 +46,7 @@ public class LoginHandler(DatabaseContext databaseContext, ILogger<LoginHandler>
             // Sign in the user
             await authService.SignInAsync(user);
 
-            return ApiResponseFactory.Ok(new AuthUserDto
+            return new AuthUserDto
             {
                 PublicId = user.PublicId,
                 FirstName = user.FirstName,
@@ -61,12 +63,16 @@ public class LoginHandler(DatabaseContext databaseContext, ILogger<LoginHandler>
                     Role = x.Role.ToString(),
                     IsOwner = x.Role == AccountRole.Owner
                 }).ToList()
-            });
+            };
+        }
+        catch (ApiException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error during login");
-            return ApiResponseFactory.Error<AuthUserDto>("An error occurred during login");
+            throw new ServerException("common.error");
         }
     }
 

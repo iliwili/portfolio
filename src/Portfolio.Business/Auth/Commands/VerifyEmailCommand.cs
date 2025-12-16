@@ -1,24 +1,19 @@
 using Mediator;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Models.Auth;
-using Portfolio.Business.Utils;
-using Portfolio.Dal;
-using Portfolio.Utils;
+using Portfolio.Business.Errors;
+using Portfolio.Business.Pipeline;
 
 namespace Portfolio.Business.Auth.Commands;
 
-public class VerifyEmail(VerifyEmailRequest request) : ICommand<ApiResponse>
+public class VerifyEmail(VerifyEmailRequest request) : ICommand
 {
     public VerifyEmailRequest Request { get; set; } = request;
 }
 
-public class VerifyEmailHandler(
-    DatabaseContext databaseContext,
-    IDateTimeProvider dateTimeProvider,
-    ILogger<VerifyEmailHandler> logger) : ICommandHandler<VerifyEmail, ApiResponse>
+public class VerifyEmailHandler(ILogger<VerifyEmailHandler> logger) : ICommandHandler<VerifyEmail>
 {
-    public async ValueTask<ApiResponse> Handle(VerifyEmail command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(VerifyEmail command, CancellationToken cancellationToken)
     {
         try
         {
@@ -29,12 +24,12 @@ public class VerifyEmailHandler(
             logger.LogInformation("Email verification attempted with token: {Token}", command.Request.Token);
 
             // Placeholder implementation - will need EmailVerificationToken entity
-            return ApiResponseFactory.BadRequest("Email verification not fully implemented yet");
+            throw new BusinessException("Email verification not fully implemented yet");
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error during email verification");
-            return ApiResponseFactory.Error("An error occurred while verifying your email");
+            throw new ServerException("An error occurred while verifying your email");
         }
     }
 }

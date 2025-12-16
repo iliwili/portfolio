@@ -1,22 +1,19 @@
-using System.Security.Claims;
 using System.Security.Cryptography;
+using FluentValidation;
 using Mediator;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Models.Auth;
 using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Auth.Services;
-using Portfolio.Business.Utils;
+using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
 using Portfolio.Utils;
 
 namespace Portfolio.Business.Auth.Commands;
 
-public class Register(RegisterRequest registerRequest) : ICommand<ApiResponse<AuthUserDto>>
+public class Register(RegisterRequest registerRequest) : ICommand<AuthUserDto>
 {
     public RegisterRequest Request { get; set; } = registerRequest;
 }
@@ -25,28 +22,27 @@ public class RegisterCommandHandler(
     DatabaseContext databaseContext,
     IDateTimeProvider dateTimeProvider,
     IAuthService authService,
-    ILogger<RegisterCommandHandler> logger) : ICommandHandler<Register, ApiResponse<AuthUserDto>>
+    IValidator<RegisterRequest> validator,
+    ILogger<RegisterCommandHandler> logger) : ICommandHandler<Register, AuthUserDto>
 {
-    public async ValueTask<ApiResponse<AuthUserDto>> Handle(Register command, CancellationToken cancellationToken)
+    public async ValueTask<AuthUserDto> Handle(Register command, CancellationToken cancellationToken)
     {
         try
         {
-            // Check if user already exists
             var existingUser = await databaseContext.Users
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == command.Request.Email.ToLower(), cancellationToken);
 
             if (existingUser != null)
             {
-                return ApiResponseFactory.BadRequest<AuthUserDto>("A user with this email already exists");
+                throw new FieldException("email", "auth.email_already_registered", command.Request.Email);
             }
 
-            // Check if username is taken
             var existingUsername = await databaseContext.Users
                 .FirstOrDefaultAsync(u => u.UserName.ToLower() == command.Request.UserName.ToLower(), cancellationToken);
 
             if (existingUsername != null)
             {
-                return ApiResponseFactory.BadRequest<AuthUserDto>("This username is already taken");
+                throw new FieldException("username", "auth.username_already_registered", command.Request.UserName);
             }
 
             var now = dateTimeProvider.Now;
@@ -68,12 +64,11 @@ public class RegisterCommandHandler(
             databaseContext.Users.Add(user);
 
             // Create account
-            var slug = await GenerateSlugAsync(command.Request.AccountName, cancellationToken);
             var account = new Account
             {
                 PublicId = GeneratePublicId(),
                 Name = command.Request.AccountName,
-                Slug = slug,
+                Slug = command.Request.Slug,
                 CreatedAt = now,
                 Owner = user
             };
@@ -109,7 +104,7 @@ public class RegisterCommandHandler(
             // Sign in the user
             await authService.SignInAsync(user);
 
-            return ApiResponseFactory.Ok(new AuthUserDto
+            return new AuthUserDto
             {
                 PublicId = user.PublicId,
                 FirstName = user.FirstName,
@@ -126,12 +121,16 @@ public class RegisterCommandHandler(
                     Role = x.Role.ToString(),
                     IsOwner = x.Role == AccountRole.Owner
                 }).ToList()
-            });
+            };
+        }
+        catch (ApiException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error during user registration");
-            return ApiResponseFactory.Error<AuthUserDto>("An error occurred during registration");
+            throw new ServerException("auth.registration.failed");
         }
     }
 
@@ -151,28 +150,5 @@ public class RegisterCommandHandler(
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
-    }
-
-    private async Task<string> GenerateSlugAsync(string name, CancellationToken cancellationToken)
-    {
-        // Simple slug generation - lowercase, replace spaces with hyphens
-        var slug = name.ToLower()
-            .Replace(" ", "-")
-            .Replace("_", "-");
-
-        // Remove special characters
-        slug = new string(slug.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
-
-        // Ensure uniqueness
-        var baseSlug = slug;
-        var counter = 1;
-
-        while (await databaseContext.Accounts.AnyAsync(a => a.Slug == slug, cancellationToken))
-        {
-            slug = $"{baseSlug}-{counter}";
-            counter++;
-        }
-
-        return slug;
     }
 }

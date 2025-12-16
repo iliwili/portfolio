@@ -1,8 +1,8 @@
 <template>
-    <RouterView />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
-import type { RouterView } from 'vue-router';
-
 </script>

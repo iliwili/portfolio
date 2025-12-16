@@ -28,4 +28,8 @@ public class RegisterRequest
     [Required]
     [StringLength(200, MinimumLength = 2)]
     public string AccountName { get; set; } = default!;
+
+    [Required]
+    [StringLength(200, MinimumLength = 2)]
+    public string Slug { get; set; } = default!;
 }

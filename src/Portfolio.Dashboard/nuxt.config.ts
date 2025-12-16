@@ -11,9 +11,9 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
+    'reka-ui/nuxt',
   ],
   devtools: { enabled: true },
-  compatibilityDate: '2025-07-15',
   app: {
     head: {
       title: 'Ilias El Makrini — Portfolio Dashboard',
@@ -30,11 +30,17 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/tailwind.css'],
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+  },
   runtimeConfig: {
     public: {
-      baseUrl: 'https://localhost:7109'
-    }
+      baseUrl: 'https://localhost:7109',
+    },
   },
+  compatibilityDate: '2025-07-15',
   vite: {
     plugins: [tailwindcss()],
   },

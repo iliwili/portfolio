@@ -1,6 +1,6 @@
-import type { AxiosInstance } from 'axios';
-import axios from 'axios';
-import { replace } from 'lodash';
+import type { AxiosInstance } from 'axios'
+import axios from 'axios'
+import { replace } from 'lodash'
 
 export function client(apiUrl: string) {
   const result = axios.create({

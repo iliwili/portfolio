@@ -2,13 +2,14 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Models.Auth;
-using Portfolio.Business.Utils;
+using Portfolio.Business.Errors;
+using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Utils;
 
 namespace Portfolio.Business.Auth.Commands;
 
-public class ResetPassword(ResetPasswordRequest request) : ICommand<ApiResponse>
+public class ResetPassword(ResetPasswordRequest request) : ICommand
 {
     public ResetPasswordRequest Request { get; set; } = request;
 }
@@ -16,9 +17,9 @@ public class ResetPassword(ResetPasswordRequest request) : ICommand<ApiResponse>
 public class ResetPasswordHandler(
     DatabaseContext databaseContext,
     IDateTimeProvider dateTimeProvider,
-    ILogger<ResetPasswordHandler> logger) : ICommandHandler<ResetPassword, ApiResponse>
+    ILogger<ResetPasswordHandler> logger) : ICommandHandler<ResetPassword>
 {
-    public async ValueTask<ApiResponse> Handle(ResetPassword command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(ResetPassword command, CancellationToken cancellationToken)
     {
         try
         {
@@ -28,17 +29,17 @@ public class ResetPasswordHandler(
 
             if (resetToken == null)
             {
-                return ApiResponseFactory.BadRequest("Invalid or expired reset token");
+                throw new BusinessException("auth.resetToken.invalid_or_expired");
             }
 
             if (resetToken.UsedAt != null)
             {
-                return ApiResponseFactory.BadRequest("This reset token has already been used");
+                throw new BusinessException("auth.resetToken.invalid_or_expired");
             }
 
             if (resetToken.ExpiresAt < dateTimeProvider.Now)
             {
-                return ApiResponseFactory.BadRequest("This reset token has expired");
+                throw new BusinessException("auth.resetToken.invalid_or_expired");
             }
 
             // Update password
@@ -47,12 +48,16 @@ public class ResetPasswordHandler(
 
             await databaseContext.SaveChangesAsync(cancellationToken);
 
-            return ApiResponseFactory.Ok();
+            return Unit.Value;
+        }
+        catch (ApiException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error during password reset");
-            return ApiResponseFactory.Error("An error occurred while resetting your password");
+            throw new ServerException("auth.resetPassword.failed");
         }
     }
 
@@ -61,4 +66,3 @@ public class ResetPasswordHandler(
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }
-

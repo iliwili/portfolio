@@ -3,21 +3,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Api.Models.Auth;
 using Portfolio.Business.Auth.Services;
-using Portfolio.Business.Utils;
+using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
 using Portfolio.Utils;
 
 namespace Portfolio.Business.Auth.Commands;
 
-public class ForgotPassword(ForgotPasswordRequest request) : ICommand<ApiResponse>
+public class ForgotPassword(ForgotPasswordRequest request) : ICommand
 {
     public ForgotPasswordRequest Request { get; set; } = request;
 }
 
-public class ForgotPasswordHandler(DatabaseContext databaseContext, ILogger<ForgotPasswordHandler> logger, IDateTimeProvider dateTimeProvider, IAuthService authService) : ICommandHandler<ForgotPassword, ApiResponse>
+public class ForgotPasswordHandler(DatabaseContext databaseContext, ILogger<ForgotPasswordHandler> logger, IDateTimeProvider dateTimeProvider, IAuthService authService) : ICommandHandler<ForgotPassword>
 {
-    public async ValueTask<ApiResponse> Handle(ForgotPassword command, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(ForgotPassword command, CancellationToken cancellationToken)
     {
         try
         {
@@ -26,8 +26,7 @@ public class ForgotPasswordHandler(DatabaseContext databaseContext, ILogger<Forg
 
             if (user == null)
             {
-                // Don't reveal if user exists
-                return ApiResponseFactory.NotFound("No user with this email was found");
+                throw new NotFoundException("auth.user_not_found");
             }
 
             var token = authService.GenerateSecureToken();
@@ -47,12 +46,16 @@ public class ForgotPasswordHandler(DatabaseContext databaseContext, ILogger<Forg
             // TODO: Send password reset email
             logger.LogInformation("Password reset token for {Email}: {Token}", command.Request.Email, token);
 
-            return ApiResponseFactory.Ok();
+            return Unit.Value;
+        }
+        catch (ApiException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error during forgot password");
-            return ApiResponseFactory.Error("An error occurred while processing your request");
+            throw new ServerException("auth.forgotPassword.failed");
         }
     }
 }
