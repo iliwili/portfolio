@@ -9,10 +9,11 @@ public class PasswordResetToken : Entity
     public int UserId { get; set; }
     public User User { get; set; } = default!;
 
-    public string Token { get; set; } = default!;
+    public byte[] Token { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
     public DateTime ExpiresAt { get; set; }
     public DateTime? UsedAt { get; set; }
+    public string? MessageId { get; set; }
 }
 
 public class PasswordResetTokenEntityTypeConfiguration : IEntityTypeConfiguration<PasswordResetToken>
@@ -45,6 +46,10 @@ public class PasswordResetTokenEntityTypeConfiguration : IEntityTypeConfiguratio
 
         builder.Property(prt => prt.UsedAt)
             .IsRequired(false);
+
+        builder.Property(prt => prt.MessageId)
+            .IsRequired(false)
+            .HasMaxLength(255);
 
         // Indexes
         builder.HasIndex(prt => prt.Token)

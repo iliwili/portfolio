@@ -1,12 +1,15 @@
 using System.Security.Cryptography;
-using FluentValidation;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Portfolio.Api.Models.Auth;
+using Microsoft.Extensions.Options;
 using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Auth.Services;
-using Portfolio.Business.Pipeline;
+using Portfolio.Business.Configuration;
+using Portfolio.Business.Emails.Models;
+using Portfolio.Business.Emails.Services;
+using Portfolio.Business.Emails.Templates;
+using Portfolio.Business.Errors;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
 using Portfolio.Utils;
@@ -22,7 +25,8 @@ public class RegisterCommandHandler(
     DatabaseContext databaseContext,
     IDateTimeProvider dateTimeProvider,
     IAuthService authService,
-    IValidator<RegisterRequest> validator,
+    IOptions<UrlOptions> urlOptions,
+    IEmailService emailService,
     ILogger<RegisterCommandHandler> logger) : ICommandHandler<Register, AuthUserDto>
 {
     public async ValueTask<AuthUserDto> Handle(Register command, CancellationToken cancellationToken)
@@ -47,10 +51,8 @@ public class RegisterCommandHandler(
 
             var now = dateTimeProvider.Now;
 
-            // Create user
             var user = new User
             {
-                PublicId = GeneratePublicId(),
                 FirstName = command.Request.FirstName,
                 LastName = command.Request.LastName,
                 UserName = command.Request.UserName,
@@ -63,10 +65,8 @@ public class RegisterCommandHandler(
 
             databaseContext.Users.Add(user);
 
-            // Create account
             var account = new Account
             {
-                PublicId = GeneratePublicId(),
                 Name = command.Request.AccountName,
                 Slug = command.Request.Slug,
                 CreatedAt = now,
@@ -75,10 +75,8 @@ public class RegisterCommandHandler(
 
             databaseContext.Accounts.Add(account);
 
-            // Create account-user relationship
             var accountUser = new AccountUser
             {
-                PublicId = GeneratePublicId(),
                 Account = account,
                 User = user,
                 Role = AccountRole.Owner,
@@ -87,14 +85,10 @@ public class RegisterCommandHandler(
 
             databaseContext.AccountUsers.Add(accountUser);
 
-            // Create email verification token
-            var verificationToken = GenerateSecureToken();
-            // TODO: Store verification token and send email
-            logger.LogInformation("Email verification token for {Email}: {Token}", command.Request.Email, verificationToken);
+            await authService.SendVerificationEmailAsync(user, cancellationToken);
 
             await databaseContext.SaveChangesAsync(cancellationToken);
 
-            // Load relationships for DTO
             await databaseContext.Entry(user)
                 .Collection(u => u.AccountUsers)
                 .Query()

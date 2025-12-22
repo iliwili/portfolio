@@ -9,7 +9,7 @@ export const registerSchema = z.object({
     .min(1, 'Last name is required')
     .max(50, 'Last name must be less than 50 characters'),
 
-  username: z.string()
+  userName: z.string()
     .min(3, 'Username must be at least 3 characters')
     .max(30, 'Username must be less than 30 characters')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Username can only contain letters, numbers, hyphens and underscores'),

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Models.Auth;
 using Portfolio.Business.Auth.Commands;
 using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Auth.Queries;
@@ -91,10 +90,11 @@ public class AuthController(IMediator mediator) : ControllerBase
     [AllowAnonymous]
     [HttpPost("resend-verification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ResendVerification([FromBody] ForgotPasswordRequest request)
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationEmailRequest request)
     {
-        // TODO: Create ResendVerificationCommand with MediatR
-        return Ok(new { message = "Verification email sent" });
+        await mediator.Send(new ResendEmailVerification(request));
+        return Ok();
     }
 }

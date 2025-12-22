@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Portfolio.Api.Models.Auth;
+namespace Portfolio.Business.Auth.Models;
 
 public class RegisterRequest
 {

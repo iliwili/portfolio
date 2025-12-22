@@ -1,7 +1,6 @@
 <template>
   <div class="w-full max-w-sm">
     <BaseCard variant="glass">
-      <!-- Verifying State -->
       <template v-if="verificationStatus === 'verifying'">
         <div class="text-center">
           <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -16,7 +15,6 @@
         </div>
       </template>
 
-      <!-- Success State -->
       <template v-else-if="verificationStatus === 'success'">
         <div class="text-center">
           <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -38,7 +36,6 @@
         </div>
       </template>
 
-      <!-- Error State (from token verification) -->
       <template v-else-if="verificationStatus === 'error'">
         <div class="text-center">
           <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -56,8 +53,7 @@
               v-if="user?.email"
               variant="primary"
               full-width
-              :loading="isLoading"
-              @click="handleResend"
+              @click="resend"
             >
               Resend verification email
             </BaseButton>
@@ -72,7 +68,6 @@
         </div>
       </template>
 
-      <!-- Pending State (no token, waiting for verification) -->
       <template v-else>
         <div class="text-center">
           <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -91,7 +86,6 @@
             Click the link in your email to verify your account.
           </p>
 
-          <!-- Success message for resend -->
           <BaseAlert
             v-if="resendSuccess"
             variant="success"
@@ -101,7 +95,6 @@
             Verification email sent!
           </BaseAlert>
 
-          <!-- Error message -->
           <BaseAlert
             v-if="error && !resendSuccess"
             variant="error"
@@ -117,15 +110,14 @@
             <BaseButton
               variant="primary"
               full-width
-              :loading="isLoading"
-              @click="handleResend"
+              @click="resend"
             >
               Resend verification email
             </BaseButton>
             <BaseButton
               variant="outline-glass"
               full-width
-              @click="navigateTo('/auth/login')"
+              to="/auth/login"
             >
               <Icon name="lucide:arrow-left" class="w-4 h-4 mr-2" />
               Back to log in
@@ -138,39 +130,62 @@
 </template>
 
 <script setup lang="ts">
+import { ResendVerificationEmailRequest, VerifyEmailRequest } from '~/api/portfolio.api.generated.clients'
+
 definePageMeta({
   layout: 'auth',
 })
 
 const route = useRoute()
-const { verifyEmail, resendVerificationEmail, isLoading, error, clearError, user, isEmailVerified } = useAuth()
+const { user, verifyEmail, resendVerificationEmail } = useAuth()
 
 const token = computed(() => route.query.token as string || '')
 const verificationStatus = ref<'pending' | 'verifying' | 'success' | 'error'>('pending')
 const resendSuccess = ref(false)
+const error = ref('')
 
-// Auto-verify if token is present
-onMounted(async () => {
-  if (token.value) {
+watch(token, async (newToken) => {
+  if (newToken) {
     verificationStatus.value = 'verifying'
-    const success = await verifyEmail(token.value)
+    const success = await verifyToken(newToken)
     verificationStatus.value = success ? 'success' : 'error'
   }
-})
+}, { immediate: true })
 
-// Watch for email verification in user state
-watch(isEmailVerified, (verified) => {
-  if (verified) {
-    verificationStatus.value = 'success'
+async function verifyToken(token: string): Promise<boolean> {
+  try {
+    if (user.value?.isEmailConfirmed) {
+      navigateTo('/accounts')
+    }
+
+    const request = new VerifyEmailRequest()
+    request.token = token
+
+    await verifyEmail(request)
+    return true
   }
-})
+  catch (e: any) {
+    error.value = e?.errorCode || 'The verification link is invalid or has expired.'
+    return false
+  }
+}
 
-async function handleResend() {
+async function resend() {
   clearError()
-  resendSuccess.value = false
-  const success = await resendVerificationEmail()
-  if (success) {
+  try {
+    const request = new ResendVerificationEmailRequest()
+    request.email = user.value?.email || ''
+
+    await resendVerificationEmail(request)
     resendSuccess.value = true
   }
+  catch (e: any) {
+    error.value = e?.message || 'Failed to resend verification email.'
+  }
+}
+
+function clearError() {
+  error.value = ''
+  resendSuccess.value = false
 }
 </script>

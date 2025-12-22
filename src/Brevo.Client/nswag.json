@@ -1,0 +1,59 @@
+{
+  "runtime": "Net90",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "brevo-api.yml"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "namespace": "Brevo.Client",
+      "contractsNamespace": "Brevo.Client",
+      "output": "Client.g.cs",
+      "contractsOutputFilePath": "Contracts.g.cs",
+      "operationGenerationMode": "SingleClientFromPathSegments",
+      "generateClientClasses": true,
+      "generateClientInterfaces": true,
+      "generateDtoTypes": true,
+      "injectHttpClient": true,
+      "disposeHttpClient": true,
+      "generateExceptionClasses": true,
+      "exceptionClass": "BrevoException",
+      "wrapDtoExceptions": true,
+      "useHttpClientCreationMethod": false,
+      "httpClientType": "System.Net.Http.HttpClient",
+      "useHttpRequestMessageCreationMethod": false,
+      "useBaseUrl": true,
+      "generateBaseUrlProperty": true,
+      "generateSyncMethods": false,
+      "jsonLibrary": "SystemTextJson",
+      "useJsonStringEnumMemberNameAttribute": false,
+      "jsonEnumSerializationFormat": "EnumMemberValue",
+      "exposeSerializerSettings": false,
+      "clientClassAccessModifier": "public",
+      "typeAccessModifier": "public",
+      "generateContractsOutput": true,
+      "parameterDateTimeFormat": "s",
+      "generateEnumsAsStrings": "true",
+      "generateUpdateJsonSerializerSettingsMethod": true,
+      "serializeTypeInformation": false,
+      "queryNullValue": "",
+      "className": "BrevoClient",
+      "generateOptionalParameters": false,
+      "generateJsonMethods": true,
+      "wrapResponses": false,
+      "generateResponseClasses": true,
+      "responseClass": "SwaggerResponse",
+      "requiredPropertiesMustBeDefined": true,
+      "classStyle": "Inpc",
+      "generateDefaultValues": true,
+      "generateDataAnnotations": true,
+      "excludedTypeNames": [],
+      "handleReferences": false,
+      "generateImmutableArrayProperties": false,
+      "generateImmutableDictionaryProperties": false,
+      "generateOptionalPropertiesAsNullable": true,
+      "generateNullableReferenceTypes": true
+    }
+  }
+}

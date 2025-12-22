@@ -1,11 +1,11 @@
 using FluentValidation;
-using Portfolio.Api.Models.Auth;
+using Portfolio.Business.Auth.Models;
 
 namespace Portfolio.Business.Auth.Validators;
 
-public sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
+public sealed class LoginValidator : AbstractValidator<LoginRequest>
 {
-    public LoginRequestValidator()
+    public LoginValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty().WithErrorCode("validation.required")

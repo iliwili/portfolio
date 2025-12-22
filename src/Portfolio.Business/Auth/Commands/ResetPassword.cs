@@ -1,9 +1,10 @@
+using System.Security.Cryptography;
+using System.Text;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Portfolio.Api.Models.Auth;
+using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Errors;
-using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Utils;
 
@@ -14,36 +15,27 @@ public class ResetPassword(ResetPasswordRequest request) : ICommand
     public ResetPasswordRequest Request { get; set; } = request;
 }
 
-public class ResetPasswordHandler(
-    DatabaseContext databaseContext,
-    IDateTimeProvider dateTimeProvider,
-    ILogger<ResetPasswordHandler> logger) : ICommandHandler<ResetPassword>
+public class ResetPasswordHandler(DatabaseContext databaseContext, IDateTimeProvider dateTimeProvider, ILogger<ResetPasswordHandler> logger) : ICommandHandler<ResetPassword>
 {
     public async ValueTask<Unit> Handle(ResetPassword command, CancellationToken cancellationToken)
     {
         try
         {
+            var now = dateTimeProvider.Now;
+
+            var tokenHash = SHA256.HashData(Encoding.UTF8.GetBytes(command.Request.Token));
+
             var resetToken = await databaseContext.PasswordResetTokens
                 .Include(rt => rt.User)
-                .FirstOrDefaultAsync(rt => rt.Token == command.Request.Token, cancellationToken);
+                .Where(rt => rt.UsedAt == null && rt.ExpiresAt >= now)
+                .FirstOrDefaultAsync(rt => rt.Token == tokenHash, cancellationToken);
 
             if (resetToken == null)
             {
                 throw new BusinessException("auth.resetToken.invalid_or_expired");
             }
 
-            if (resetToken.UsedAt != null)
-            {
-                throw new BusinessException("auth.resetToken.invalid_or_expired");
-            }
-
-            if (resetToken.ExpiresAt < dateTimeProvider.Now)
-            {
-                throw new BusinessException("auth.resetToken.invalid_or_expired");
-            }
-
-            // Update password
-            resetToken.User.PasswordHash = HashPassword(command.Request.NewPassword);
+            resetToken.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(command.Request.NewPassword);
             resetToken.UsedAt = dateTimeProvider.Now;
 
             await databaseContext.SaveChangesAsync(cancellationToken);
@@ -59,10 +51,5 @@ public class ResetPasswordHandler(
             logger.LogError(ex, "Error during password reset");
             throw new ServerException("auth.resetPassword.failed");
         }
-    }
-
-    private string HashPassword(string password)
-    {
-        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }

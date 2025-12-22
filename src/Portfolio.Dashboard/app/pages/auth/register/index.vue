@@ -49,7 +49,7 @@
         </div>
 
         <FormField
-          name="username"
+          name="userName"
           label="Username"
           required
           :errors="errors"
@@ -162,10 +162,8 @@
 </template>
 
 <script setup lang="ts">
-import apiFactory from '~/api/portfolio.api'
 import { registerSchema, type RegisterFormData } from './models/register'
 import type { RegisterRequest } from '~/api/portfolio.api.generated.clients'
-import { AuthClient } from '~/api/portfolio.api.generated.clients'
 import { useValidate } from '~/composables/useValidate'
 import FormField from '~/components/FormField.vue'
 
@@ -173,11 +171,11 @@ definePageMeta({
   layout: 'auth',
 })
 
-const client = apiFactory.create(AuthClient)
+const auth = useAuth()
 const request = ref<RegisterFormData>({
   firstName: '',
   lastName: '',
-  username: '',
+  userName: '',
   email: '',
   accountName: '',
   slug: '',
@@ -190,10 +188,10 @@ const { clearFormError, applyError } = useProblemFormErrors(addFromProblem)
 
 const siteNameHint = computed(() => {
   if (!request.value.accountName)
-    return 'Your site will be available at {siteName}.portfolio.com'
+    return 'Your site will be available at {siteName}.portiva.com'
   const slug = request.value.accountName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
   request.value.slug = slug
-  return `${slug}.portfolio.com`
+  return `${slug}.portiva.com`
 })
 
 async function submit() {
@@ -204,17 +202,14 @@ async function submit() {
     const requestBody = {
       firstName: request.value.firstName,
       lastName: request.value.lastName,
-      userName: request.value.username,
+      userName: request.value.userName,
       email: request.value.email,
       password: request.value.password,
       accountName: request.value.accountName,
       slug: request.value.slug,
     } as RegisterRequest
 
-    // Call register from auth store
-    await client.register(requestBody)
-
-    // Redirect to verification page or dashboard
+    await auth.register(requestBody)
     await navigateTo('/auth/verify-email')
   }
   catch (e) {

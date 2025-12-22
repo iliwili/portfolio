@@ -13,8 +13,9 @@ public static class PublicIdGenerator
         "User" => "usr",
         "Account" => "acc",
         "AccountUser" => "acc_usr",
-        "RefreshToken" => "rt",
+        "EmailVerificationToken" => "evt",
         "PasswordResetToken" => "prt",
+        "RefreshToken" => "rt",
         _ => t.Name.ToLower()
     };
 }

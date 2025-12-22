@@ -1,6 +1,8 @@
 <template>
-  <button
-    :type="type"
+  <component
+    :is="componentType"
+    :type="!to ? type : undefined"
+    :to="to"
     :disabled="disabled || loading"
     :class="[
       'cursor-pointer inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-150',
@@ -29,7 +31,7 @@
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
     </svg>
     <slot />
-  </button>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -40,9 +42,10 @@ export interface BaseButtonProps {
   disabled?: boolean
   fullWidth?: boolean
   type?: 'button' | 'submit' | 'reset'
+  to?: string
 }
 
-withDefaults(defineProps<BaseButtonProps>(), {
+const props = withDefaults(defineProps<BaseButtonProps>(), {
   variant: 'primary',
   size: 'md',
   loading: false,
@@ -54,6 +57,8 @@ withDefaults(defineProps<BaseButtonProps>(), {
 defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+const componentType = computed(() => props.to ? resolveComponent('NuxtLink') : 'button')
 
 const variantClasses: Record<string, string> = {
   'primary': 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm dark:bg-primary-500 dark:hover:bg-primary-600',

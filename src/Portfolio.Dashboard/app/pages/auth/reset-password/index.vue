@@ -73,27 +73,39 @@
         </BaseAlert>
 
         <!-- Form -->
-        <form class="space-y-4" @submit.prevent="handleSubmit">
-          <BaseInput
-            v-model="password"
-            type="password"
+        <div class="space-y-4">
+          <FormField
+            name="newPassword"
             label="New password"
-            placeholder="Enter new password"
-            autocomplete="new-password"
+            :errors="errors"
             variant="glass"
-            required
-          />
+          >
+            <BaseInput
+              v-model="request.newPassword"
+              type="password"
+              label="New password"
+              placeholder="Enter new password"
+              autocomplete="new-password"
+              variant="glass"
+              required
+            />
+          </FormField>
 
-          <BaseInput
-            v-model="confirmPassword"
-            type="password"
+          <FormField
+            name="confirmPassword"
             label="Confirm password"
-            placeholder="Confirm new password"
-            autocomplete="new-password"
+            :errors="errors"
             variant="glass"
-            :error="passwordMismatch ? 'Passwords do not match' : ''"
-            required
-          />
+          >
+            <BaseInput
+              v-model="request.confirmPassword"
+              type="password"
+              placeholder="Confirm new password"
+              autocomplete="new-password"
+              variant="glass"
+              required
+            />
+          </FormField>
 
           <BaseButton
             type="submit"
@@ -101,11 +113,11 @@
             size="lg"
             full-width
             :loading="isLoading"
-            :disabled="passwordMismatch"
+            @click="submit"
           >
             Reset password
           </BaseButton>
-        </form>
+        </div>
 
         <!-- Back to login -->
         <p class="text-center text-sm text-gray-500 mt-6">
@@ -115,11 +127,14 @@
           </BaseLink>
         </p>
       </template>
-    </BaseCard>
+    </Basecard>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ResetPasswordRequest } from '~/api/portfolio.api.generated.clients'
+import { resetPasswordSchema, type ResetPasswordFormData } from './models/resetPassword'
+
 definePageMeta({
   layout: 'auth',
 })
@@ -127,37 +142,41 @@ definePageMeta({
 const route = useRoute()
 const { resetPassword } = useAuth()
 
+const request = ref<ResetPasswordFormData>({
+  newPassword: '',
+  confirmPassword: '',
+})
+
+const { validate, errors, addFromProblem } = useValidate(resetPasswordSchema)
+const { clearFormError, applyError } = useProblemFormErrors(addFromProblem)
+
 const token = computed(() => route.query.token as string || '')
-const password = ref('')
-const confirmPassword = ref('')
 const success = ref(false)
 const isLoading = ref(false)
 const error = ref('')
 
-const passwordMismatch = computed(() => {
-  return Boolean(confirmPassword.value && password.value !== confirmPassword.value)
-})
-
+// TODO: validate token via api first
 const invalidToken = computed(() => !token.value)
 
 function clearError() {
   error.value = ''
 }
 
-async function handleSubmit() {
-  if (passwordMismatch.value || invalidToken.value)
-    return
+async function submit() {
+  clearFormError()
+  if (!validate(request.value)) return
 
-  clearError()
   isLoading.value = true
   try {
-    const result = await resetPassword(token.value, password.value)
-    if (result) {
-      success.value = true
-    }
+    const requestBody = new ResetPasswordRequest()
+    requestBody.token = token.value
+    requestBody.newPassword = request.value.newPassword
+    await resetPassword(requestBody)
+    success.value = true
   }
-  catch (e: any) {
-    error.value = e?.message || 'Failed to reset password. Please try again.'
+  catch (e) {
+    applyError(e)
+    success.value = false
   }
   finally {
     isLoading.value = false

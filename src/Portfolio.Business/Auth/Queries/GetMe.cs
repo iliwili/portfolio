@@ -2,7 +2,7 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Portfolio.Business.Auth.Models;
-using Portfolio.Business.Pipeline;
+using Portfolio.Business.Errors;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
 using Portfolio.Dal.Utils;
@@ -24,6 +24,10 @@ public class GetMeHandler(DatabaseContext databaseContext, ILogger<GetMeHandler>
                 .ThenInclude(au => au.Account)
                 .FirstOrDefaultAsync(u => u.PublicId == currentUser.PublicId, cancellationToken);
 
+            if (user == null)
+            {
+                throw new ServerException("auth.fetch_profile.failed");
+            }
 
             return new AuthUserDto
             {

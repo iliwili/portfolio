@@ -16,6 +16,7 @@ public class DatabaseContext : DbContext
     public DbSet<AccountUser> AccountUsers => Set<AccountUser>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
 
 #if DEBUG || DEBUGTEST
     public const string SystemUser = "SYSTEMDEV";

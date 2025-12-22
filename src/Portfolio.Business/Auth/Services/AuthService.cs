@@ -5,20 +5,33 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Portfolio.Business.Auth.Helpers;
+using Portfolio.Business.Configuration;
+using Portfolio.Business.Emails.Models;
+using Portfolio.Business.Emails.Services;
+using Portfolio.Business.Emails.Templates;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;
+using Portfolio.Utils;
 
 namespace Portfolio.Business.Auth.Services;
 
 public interface IAuthService
 {
     Task SignInAsync(User user);
-    string GenerateSecureToken();
-
+    Task SendVerificationEmailAsync(User user, CancellationToken cancellationToken = default);
     Task<string> GenerateSlug(string name, CancellationToken cancellationToken = default);
 }
 
-public class AuthService(ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, DatabaseContext databaseContext) : IAuthService
+public class AuthService(
+    DatabaseContext databaseContext,
+    IDateTimeProvider dateTimeProvider,
+    ISecureTokenGenerator secureTokenGenerator,
+    IHttpContextAccessor httpContextAccessor,
+    IOptions<UrlOptions> urlOptions,
+    IEmailService emailService,
+    ILogger<AuthService> logger) : IAuthService
 {
     public async Task SignInAsync(User user)
     {
@@ -54,26 +67,45 @@ public class AuthService(ILogger<AuthService> logger, IHttpContextAccessor httpC
             new ClaimsPrincipal(claimsIdentity),
             authProperties);
     }
-
-    public string GenerateSecureToken()
+    public async Task SendVerificationEmailAsync(User user, CancellationToken cancellationToken = default)
     {
-        var randomBytes = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
+        var now = dateTimeProvider.Now;
+        var token = secureTokenGenerator.Generate();
+
+        var emailVerificationToken = new EmailVerificationToken
+        {
+            User = user,
+            Token = secureTokenGenerator.Hash(token),
+            ExpiresAt = now.AddHours(24)
+        };
+
+        databaseContext.EmailVerificationTokens.Add(emailVerificationToken);
+
+        // Send verification email
+        var parameters = new Dictionary<string, object>
+        {
+            { "verification_link", $"{urlOptions.Value.Frontend}/auth/verify-email?token={token}" }
+        };
+        var mailRequest = new MailRequest
+        {
+            To = [new Recipient { Email = user.Email, Name = $"{user.FirstName} {user.LastName}" }],
+            TemplateId = MailTemplates.ConfirmEmail,
+            Params = parameters
+        };
+
+        var messageId = await emailService.SendEmailAsync(mailRequest, cancellationToken);
+        emailVerificationToken.MessageId = messageId;
     }
+
 
     public async Task<string> GenerateSlug(string name, CancellationToken cancellationToken)
     {
-        // Simple slug generation - lowercase, replace spaces with hyphens
         var slug = name.ToLower()
             .Replace(" ", "-")
             .Replace("_", "-");
 
-        // Remove special characters
         slug = new string(slug.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray());
 
-        // Ensure uniqueness
         var baseSlug = slug;
         var counter = 1;
 

@@ -1,4 +1,4 @@
-﻿﻿using Portfolio.Utils.Extensions;
+﻿using Portfolio.Utils.Extensions;
 
 namespace Portfolio.Utils;
 

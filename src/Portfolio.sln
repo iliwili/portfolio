@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Business", "Portf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portfolio.Utils", "Portfolio.Utils\Portfolio.Utils.csproj", "{A1369969-5569-4551-A872-8C05346ADD22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brevo.Client", "Brevo.Client\Brevo.Client.csproj", "{60E90821-96B4-41F9-A906-1843677E14F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{A1369969-5569-4551-A872-8C05346ADD22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1369969-5569-4551-A872-8C05346ADD22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1369969-5569-4551-A872-8C05346ADD22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60E90821-96B4-41F9-A906-1843677E14F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60E90821-96B4-41F9-A906-1843677E14F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60E90821-96B4-41F9-A906-1843677E14F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60E90821-96B4-41F9-A906-1843677E14F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

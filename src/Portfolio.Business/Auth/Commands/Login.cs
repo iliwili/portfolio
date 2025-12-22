@@ -1,9 +1,9 @@
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Portfolio.Api.Models.Auth;
 using Portfolio.Business.Auth.Models;
 using Portfolio.Business.Auth.Services;
+using Portfolio.Business.Errors;
 using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Dal.Entities;

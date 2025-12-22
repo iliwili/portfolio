@@ -1,3 +1,4 @@
+using Brevo.Client;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Mediator;
@@ -5,23 +6,31 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Errors;
 using Portfolio.Business;
+using Portfolio.Business.Auth.Helpers;
 using Portfolio.Business.Auth.Services;
+using Portfolio.Business.Configuration;
+using Portfolio.Business.Emails.Services;
 using Portfolio.Business.Pipeline;
 using Portfolio.Dal;
 using Portfolio.Dal.Utils;
 using Portfolio.Utils;
 using Scalar.AspNetCore;
+using Task = System.Threading.Tasks.Task;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<UrlOptions>(builder.Configuration.GetSection(UrlOptions.SectionName));
 
 // Add services to the container.
 builder.Services.AddDbContext<DatabaseContext>(options =>
 {
     var cs = builder.Configuration.GetConnectionString("Default");
     options.UseNpgsql(cs);
+    // Temporarily suppress pending migration warning to allow build
+    options.ConfigureWarnings(warnings =>
+        warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
 
-// Register HttpContextAccessor (needed for permission checks)
 builder.Services.AddHttpContextAccessor();
 
 // Fluent validation
@@ -33,9 +42,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<IDal>();
 builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
-// Register services
-builder.Services.AddScoped<IAuthService, AuthService>();
-// CORS (Nuxt dashboard)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Dashboard", policy =>
@@ -48,7 +54,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Cookie auth
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddTransient<ISecureTokenGenerator, SecureTokenGenerator>();
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -88,6 +95,12 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddMediator(options => { options.ServiceLifetime = ServiceLifetime.Transient; });
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+builder.Services.AddBrevo(options =>
+{
+    options.BaseUrl = builder.Configuration.GetValue<string>("Brevo:BaseUrl") ?? throw new InvalidOperationException("Brevo:BaseUrl is not configured.");
+    options.ApiKey = builder.Configuration.GetValue<string>("Brevo:ApiKey") ?? throw new InvalidOperationException("Brevo:ApiKey is not configured.");
+});
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
 

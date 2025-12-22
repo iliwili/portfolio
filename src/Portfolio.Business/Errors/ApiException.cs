@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Portfolio.Business.Pipeline;
+namespace Portfolio.Business.Errors;
 
 public abstract class ApiException(string errorCode, object? errorArgs = null, Exception? inner = null) : Exception(errorCode, inner)
 {

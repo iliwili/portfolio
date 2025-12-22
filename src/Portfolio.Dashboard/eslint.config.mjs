@@ -10,6 +10,7 @@ export default withNuxt(
         singleline: 3,
         multiline: 1,
       }],
+      'vue/no-side-effects-in-computed-properties': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/unified-signatures': 'off',
     },

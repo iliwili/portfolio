@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const { user, isInitialized } = useAuth()
+  const { user } = useAuth()
 
   // Public routes that don't require auth
   const publicRoutes = [
@@ -7,15 +7,10 @@ export default defineNuxtRouteMiddleware((to) => {
     '/auth/register',
     '/auth/forgot-password',
     '/auth/reset-password',
+    '/auth/verify-email',
   ]
 
   const isPublicRoute = publicRoutes.some(route => to.path.startsWith(route))
-
-  // Wait for auth to initialize before redirecting
-  if (!isInitialized.value) {
-    // Plugin hasn't finished checking auth yet
-    return
-  }
 
   // If not logged in and trying to access protected route
   if (!user.value && !isPublicRoute) {
@@ -27,7 +22,7 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo('/accounts')
   }
 
-  // Check email verification for protected routes
+  // Check email verification for protected routes (skip if already on verify-email page)
   if (user.value && !user.value.isEmailConfirmed && to.path !== '/auth/verify-email') {
     return navigateTo('/auth/verify-email')
   }

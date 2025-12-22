@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Portfolio.Dal.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Auth_Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,16 +68,46 @@ namespace Portfolio.Dal.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmailVerificationToken",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Token = table.Column<byte[]>(type: "bytea", maxLength: 500, nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    MessageId = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    PublicId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CreatedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, defaultValue: "SYSTEM"),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
+                    ModifiedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LockId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerificationToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailVerificationToken_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PasswordResetToken",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
-                    Token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Token = table.Column<byte[]>(type: "bytea", maxLength: 500, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UsedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    MessageId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     PublicId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     CreatedBy = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false, defaultValue: "SYSTEM"),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)),
@@ -210,6 +240,17 @@ namespace Portfolio.Dal.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationToken_PublicId",
+                table: "EmailVerificationToken",
+                column: "PublicId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationToken_UserId",
+                table: "EmailVerificationToken",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PasswordResetToken_ExpiresAt",
                 table: "PasswordResetToken",
                 column: "ExpiresAt");
@@ -287,6 +328,9 @@ namespace Portfolio.Dal.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AccountUser");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerificationToken");
 
             migrationBuilder.DropTable(
                 name: "PasswordResetToken");

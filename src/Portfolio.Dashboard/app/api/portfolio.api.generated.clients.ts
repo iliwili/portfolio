@@ -440,7 +440,7 @@ export class AuthClient {
         return Promise.resolve<void>(null as any);
     }
 
-    resendVerification(request: ForgotPasswordRequest, cancelToken?: CancelToken): Promise<void> {
+    resendVerification(request: ResendVerificationEmailRequest, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/Auth/resend-verification";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -485,8 +485,15 @@ export class AuthClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 500) {
+            const _responseText = response.data;
+            let result500: any = null;
+            let resultData500  = _responseText;
+            result500 = ProblemDetails.fromJS(resultData500);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -996,6 +1003,29 @@ export class VerifyEmailRequest {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["token"] = this.token !== undefined ? this.token : null as any;
+        return data;
+    }
+}
+
+export class ResendVerificationEmailRequest {
+    email!: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"] !== undefined ? _data["email"] : null as any;
+        }
+    }
+
+    static fromJS(data: any): ResendVerificationEmailRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResendVerificationEmailRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email !== undefined ? this.email : null as any;
         return data;
     }
 }

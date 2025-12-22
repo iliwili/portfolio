@@ -1,5 +1,5 @@
 using FluentValidation;
-using Portfolio.Api.Models.Auth;
+using Portfolio.Business.Auth.Models;
 
 namespace Portfolio.Business.Auth.Validators;
 
