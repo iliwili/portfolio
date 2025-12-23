@@ -1,163 +1,151 @@
 <template>
   <div class="w-full max-w-md">
-    <BaseCard variant="glass">
-      <!-- Header -->
-      <div class="text-center mb-6">
-        <h1 class="text-xl font-semibold text-gray-900">
-          Create an account
-        </h1>
-        <p class="text-gray-500 mt-1 text-sm">
-          Start building your portfolio today
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-          <FormField
-            name="firstName"
-            label="First name"
-            required
-            :errors="errors"
-            variant="glass"
-          >
-            <BaseInput
-              v-model="request.firstName"
-              type="text"
-              placeholder="John"
-              autocomplete="given-name"
-              variant="glass"
-              required
-            />
-          </FormField>
-
-          <FormField
-            name="lastName"
-            label="Last name"
-            required
-            :errors="errors"
-            variant="glass"
-          >
-            <BaseInput
-              v-model="request.lastName"
-              type="text"
-              placeholder="Doe"
-              autocomplete="family-name"
-              variant="glass"
-              required
-            />
-          </FormField>
+    <UCard>
+      <div class="p-8">
+        <!-- Header -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-semibold text-foreground">
+            Create an account
+          </h1>
+          <p class="text-muted-foreground mt-1">
+            Start building your portfolio today
+          </p>
         </div>
 
-        <FormField
-          name="userName"
-          label="Username"
-          required
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.userName"
-            type="text"
-            placeholder="johndoe"
-            autocomplete="username"
-            variant="glass"
-            required
-          />
-        </FormField>
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <UFormField
+              name="firstName"
+              label="First name"
+              :required="true"
+              :errors="errors"
+            >
+              <Input
+                v-model="request.firstName"
+                type="text"
+                placeholder="John"
+                autocomplete="given-name"
+                required
+              />
+            </UFormField>
 
-        <FormField
-          name="email"
-          label="Email"
-          required
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.email"
-            type="email"
-            placeholder="you@example.com"
-            autocomplete="email"
-            variant="glass"
-            required
-          />
-        </FormField>
+            <UFormField
+              name="lastName"
+              label="Last name"
+              :required="true"
+              :errors="errors"
+            >
+              <Input
+                v-model="request.lastName"
+                type="text"
+                placeholder="Doe"
+                autocomplete="family-name"
+                required
+              />
+            </UFormField>
+          </div>
 
-        <FormField
-          name="accountName"
-          label="Site name"
-          required
-          :errors="errors"
-          :hint="siteNameHint"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.accountName"
-            type="text"
-            placeholder="My Portfolio"
-            variant="glass"
-            required
-          />
-        </FormField>
+          <UFormField
+            name="userName"
+            label="Username"
+            :required="true"
+            :error="errors"
+          >
+            <Input
+              v-model="request.userName"
+              type="text"
+              placeholder="johndoe"
+              autocomplete="username"
+              required
+            />
+          </UFormField>
 
-        <FormField
-          name="password"
-          label="Password"
-          required
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.password"
-            type="password"
-            placeholder="Create a password"
-            autocomplete="new-password"
-            variant="glass"
-            required
-          />
-        </FormField>
+          <UFormField
+            name="email"
+            label="Email"
+            :required="true"
+            :errors="errors"
+          >
+            <Input
+              v-model="request.email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </UFormField>
 
-        <FormField
-          name="confirmPassword"
-          label="Confirm password"
-          required
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            autocomplete="new-password"
-            variant="glass"
-            required
-          />
-        </FormField>
+          <UFormField
+            name="accountName"
+            label="Site name"
+            :required="true"
+            :errors="errors"
+            :hint="siteNameHint"
+          >
+            <Input
+              v-model="request.accountName"
+              type="text"
+              placeholder="My Portfolio"
+              required
+            />
+          </UFormField>
 
-        <BaseButton
-          type="submit"
-          variant="primary"
-          size="lg"
-          full-width
-          @click="submit"
-        >
-          Create account
-        </BaseButton>
+          <UFormField
+            name="password"
+            label="Password"
+            :required="true"
+            :errors="errors"
+          >
+            <PasswordInput
+              v-model="request.password"
+              placeholder="Create a password"
+              autocomplete="new-password"
+              required
+            />
+          </UFormField>
+
+          <UFormField
+            name="confirmPassword"
+            label="Confirm password"
+            :required="true"
+            :errors="errors"
+          >
+            <PasswordInput
+              v-model="request.confirmPassword"
+              placeholder="Confirm your password"
+              autocomplete="new-password"
+              required
+            />
+          </UFormField>
+
+          <Button
+            type="submit"
+            variant="default"
+            size="lg"
+            class="w-full"
+            @click="submit"
+          >
+            Create account
+          </Button>
+        </div>
+
+        <UDivider text="or" />
+
+        <!-- Social login -->
+        <Button variant="outline" class="w-full">
+          <Icon name="logos:github-icon" class="w-4 h-4 mr-2" />
+          Continue with GitHub
+        </Button>
+
+        <!-- Login link -->
+        <p class="text-center text-sm text-muted-foreground mt-6">
+          Already have an account?
+          <NuxtLink to="/auth/login" class="text-primary hover:text-primary/80 font-medium transition-colors">
+            Log in
+          </NuxtLink>
+        </p>
       </div>
-
-      <BaseDivider text="or" variant="glass" />
-
-      <BaseButton variant="outline-glass" full-width>
-        <Icon name="logos:github-icon" class="w-4 h-4 mr-2" />
-        Continue with GitHub
-      </BaseButton>
-
-      <p class="text-center text-sm text-gray-500 mt-6">
-        Already have an account?
-        <BaseLink to="/auth/login" variant="glass">
-          Log in
-        </BaseLink>
-      </p>
-    </BaseCard>
+    </UCard>
   </div>
 </template>
 
@@ -165,7 +153,8 @@
 import { registerSchema, type RegisterFormData } from './models/register'
 import type { RegisterRequest } from '~/api/portfolio.api.generated.clients'
 import { useValidate } from '~/composables/useValidate'
-import FormField from '~/components/FormField.vue'
+import { Button } from '~/components/ui/button'
+import { Input, PasswordInput } from '~/components/ui/input'
 
 definePageMeta({
   layout: 'auth',

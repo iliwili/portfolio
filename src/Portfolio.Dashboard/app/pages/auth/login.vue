@@ -1,85 +1,83 @@
 <template>
-  <div class="w-full max-w-sm">
-    <BaseCard variant="glass">
-      <!-- Header -->
-      <div class="text-center mb-6">
-        <h1 class="text-xl font-semibold text-gray-900">
-          Log in
-        </h1>
-        <p class="text-gray-500 mt-1 text-sm">
-          Continue to Portfolio
-        </p>
-      </div>
-
-      <!-- Form -->
-      <div class="space-y-4">
-        <FormField
-          name="email"
-          label="Email"
-          :required="true"
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.email"
-            type="email"
-            placeholder="Enter your email"
-            autocomplete="email"
-            variant="glass"
-            required
-          />
-        </FormField>
-
-        <FormField
-          name="password"
-          label="Password"
-          :required="true"
-          :errors="errors"
-          variant="glass"
-        >
-          <BaseInput
-            v-model="request.password"
-            type="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            variant="glass"
-            required
-          />
-        </FormField>
-
-        <div class="flex items-center justify-end">
-          <BaseLink to="/auth/forgot-password" variant="glass" class="text-sm">
-            Forgot password?
-          </BaseLink>
+  <div class="w-full max-w-md">
+    <UCard>
+      <div class="p-8">
+        <!-- Header -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-semibold text-foreground">
+            Log in
+          </h1>
+          <p class="text-muted-foreground mt-1">
+            Continue to Portfolio
+          </p>
         </div>
 
-        <BaseButton
-          type="submit"
-          variant="primary"
-          size="lg"
-          full-width
-          @click="submit"
-        >
-          Log in
-        </BaseButton>
+        <!-- Form -->
+        <div class="space-y-4">
+          <UFormField
+            name="email"
+            label="Email"
+            :required="true"
+            :errors="errors"
+          >
+            <Input
+              v-model="request.email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </UFormField>
+
+          <UFormField
+            name="password"
+            label="Password"
+            :required="true"
+            :errors="errors"
+          >
+            <PasswordInput
+              v-model="request.password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+          </UFormField>
+
+          <div class="flex items-center justify-end">
+            <NuxtLink to="/auth/forgot-password" class="text-sm text-primary hover:text-primary/80 transition-colors">
+              Forgot password?
+            </NuxtLink>
+          </div>
+
+          <Button
+            class="w-full"
+            type="submit"
+            variant="default"
+            size="lg"
+            full-width
+            @click="submit"
+          >
+            Log in
+          </Button>
+        </div>
+
+        <UDivider text="or" />
+
+        <!-- Social login -->
+        <Button class="w-full" variant="outline">
+          <Icon name="logos:github-icon" class="w-4 h-4 mr-2" />
+          Continue with GitHub
+        </Button>
+
+        <!-- Register link -->
+        <p class="text-center text-sm text-muted-foreground mt-6">
+          New to Portfolio?
+          <NuxtLink to="/auth/register" class="text-primary hover:text-primary/80 font-medium transition-colors">
+            Create an account
+          </NuxtLink>
+        </p>
       </div>
-
-      <BaseDivider text="or" variant="glass" />
-
-      <!-- Social login buttons -->
-      <BaseButton variant="outline-glass" full-width>
-        <Icon name="logos:github-icon" class="w-4 h-4 mr-2" />
-        Continue with GitHub
-      </BaseButton>
-
-      <!-- Register link -->
-      <p class="text-center text-sm text-gray-500 mt-6">
-        New to Portfolio?
-        <BaseLink to="/auth/register" variant="glass">
-          Create an account
-        </BaseLink>
-      </p>
-    </BaseCard>
+    </UCard>
   </div>
 </template>
 
@@ -87,8 +85,9 @@
 import z from 'zod'
 import { LoginRequest } from '~/api/portfolio.api.generated.clients'
 import { useValidate } from '~/composables/useValidate'
-import FormField from '~/components/FormField.vue'
 import { useProblemFormErrors } from '~/composables/useApiFormErrors'
+import { Button } from '~/components/ui/button'
+import { Input, PasswordInput } from '~/components/ui/input'
 
 definePageMeta({
   layout: 'auth',

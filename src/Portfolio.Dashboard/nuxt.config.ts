@@ -2,17 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@pinia/nuxt',
-    '@vueuse/nuxt',
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxt/image',
-    '@nuxtjs/color-mode',
-    '@nuxtjs/i18n',
-    'reka-ui/nuxt',
-  ],
+  modules: ['@pinia/nuxt', '@vueuse/nuxt', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxt/image', '@nuxtjs/color-mode', '@nuxtjs/i18n', 'shadcn-nuxt'],
   devtools: { enabled: true },
   app: {
     head: {
@@ -32,8 +22,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   colorMode: {
     classSuffix: '',
-    preference: 'system',
-    fallback: 'light',
   },
   runtimeConfig: {
     public: {
@@ -62,5 +50,9 @@ export default defineNuxtConfig({
       strictMessage: false,
       escapeHtml: false,
     },
+  },
+  shadcn: {
+    prefix: '',
+    componentDir: '@/components/ui',
   },
 })

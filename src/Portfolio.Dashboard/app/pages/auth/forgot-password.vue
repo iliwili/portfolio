@@ -1,107 +1,110 @@
 <template>
-  <div class="w-full max-w-sm">
-    <BaseCard variant="glass">
-      <!-- Success State -->
-      <template v-if="submitted">
-        <div class="text-center">
-          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="lucide:mail-check" class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          </div>
-          <h1 class="text-xl font-semibold text-gray-900 mb-2">
-            Check your email
-          </h1>
-          <p class="text-gray-500 text-sm mb-4">
-            We've sent a password reset link to<br>
-            <span class="font-medium text-gray-900">{{ request.email }}</span>
-          </p>
-          <p class="text-xs text-gray-500 mb-4">
-            Didn't receive the email? Check your spam folder or
-            <button
-              type="button"
-              class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline"
-              @click="submitted = false"
+  <div class="w-full max-w-md">
+    <UCard>
+      <div class="p-8">
+        <!-- Success State -->
+        <template v-if="submitted">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Icon name="lucide:mail-check" class="w-8 h-8 text-primary" />
+            </div>
+            <h1 class="text-2xl font-semibold text-foreground mb-2">
+              Check your email
+            </h1>
+            <p class="text-muted-foreground mb-1">
+              We've sent a password reset link to
+            </p>
+            <p class="font-medium text-foreground mb-4">
+              {{ request.email }}
+            </p>
+            <p class="text-sm text-muted-foreground mb-6">
+              Didn't receive the email? Check your spam folder or
+              <button
+                type="button"
+                class="text-primary hover:text-primary/80 font-medium transition-colors"
+                @click="submitted = false"
+              >
+                try again
+              </button>
+            </p>
+            <Button
+              variant="outline"
+              size="lg"
+              class="w-full"
+              as-child
             >
-              try again
-            </button>
-          </p>
-          <BaseButton
-            variant="outline-glass"
-            full-width
-            @click="navigateTo('/auth/login')"
-          >
-            <Icon name="lucide:arrow-left" class="w-4 h-4 mr-2" />
-            Back to log in
-          </BaseButton>
-        </div>
-      </template>
-
-      <!-- Form State -->
-      <template v-else>
-        <!-- Header -->
-        <div class="text-center mb-6">
-          <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="lucide:key" class="w-6 h-6 text-gray-600" />
+              <NuxtLink to="/auth/login">
+                <Icon name="lucide:arrow-left" class="w-4 h-4 mr-2" />
+                Back to log in
+              </NuxtLink>
+            </Button>
           </div>
-          <h1 class="text-xl font-semibold text-gray-900">
-            Reset your password
-          </h1>
-          <p class="text-gray-500 mt-1 text-sm">
-            Enter your email to receive reset instructions
-          </p>
-        </div>
+        </template>
 
-        <!-- Error Alert -->
-        <BaseAlert
-          v-if="formError"
-          variant="error"
-          dismissible
-          glass
-          class="mb-4"
-          @dismiss="clearError"
-        >
-          {{ formError }}
-        </BaseAlert>
+        <!-- Form State -->
+        <template v-else>
+          <!-- Header -->
+          <div class="mb-8">
+            <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Icon name="lucide:key" class="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h1 class="text-2xl font-semibold text-foreground text-center">
+              Reset your password
+            </h1>
+            <p class="text-muted-foreground mt-2 text-center">
+              Enter your email to receive reset instructions
+            </p>
+          </div>
 
-        <!-- Form -->
-        <div class="space-y-4">
-          <FormField
-            name="email"
-            label="Email"
-            required
-            :errors="errors"
-            variant="glass"
+          <!-- Error Alert -->
+          <UAlert
+            v-if="formError"
+            variant="error"
+            dismissible
+            class="mb-6"
+            @dismiss="clearFormError"
           >
-            <BaseInput
-              v-model="request.email"
-              type="email"
+            {{ formError }}
+          </UAlert>
+
+          <!-- Form -->
+          <div class="space-y-4">
+            <UFormField
+              name="email"
               label="Email"
-              placeholder="Enter your email"
-              autocomplete="email"
-              variant="glass"
-              required
-            />
-          </FormField>
+              :required="true"
+              :error="errors.email"
+            >
+              <Input
+                v-model="request.email"
+                type="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+            </UFormField>
 
-          <BaseButton
-            type="submit"
-            variant="primary"
-            size="lg"
-            full-width
-            @click="submit"
-          >
-            Send reset link
-          </BaseButton>
-        </div>
+            <Button
+              type="submit"
+              variant="default"
+              size="lg"
+              class="w-full"
+              @click="submit"
+            >
+              Send reset link
+            </Button>
+          </div>
 
-        <!-- Back to login -->
-        <p class="text-center text-sm text-gray-500 mt-4">
-          <BaseLink to="/auth/login" variant="glass" class="inline-flex items-center gap-1">
-            <Icon name="lucide:arrow-left" class="w-4 h-4" />
-            Back to log in
-          </BaseLink>
-        </p>
-      </template>
-    </BaseCard>
+          <!-- Back to login -->
+          <p class="text-center text-sm text-muted-foreground mt-6">
+            <NuxtLink to="/auth/login" class="inline-flex items-center gap-1 text-primary hover:text-primary/80 transition-colors">
+              <Icon name="lucide:arrow-left" class="w-4 h-4" />
+              Back to log in
+            </NuxtLink>
+          </p>
+        </template>
+      </div>
+    </UCard>
   </div>
 </template>
 
@@ -109,6 +112,8 @@
 import z from 'zod'
 import apiFactory from '~/api/portfolio.api'
 import { AuthClient, ForgotPasswordRequest } from '~/api/portfolio.api.generated.clients'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 
 definePageMeta({
   layout: 'auth',

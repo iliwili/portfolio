@@ -1,55 +1,47 @@
 <template>
-  <div class="min-h-screen relative overflow-hidden">
-    <!-- Animated gradient background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-500 to-blue-700 animate-gradient-shift" />
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(255,255,255,0.15)_0%,_transparent_50%)]" />
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(0,0,0,0.2)_0%,_transparent_50%)]" />
-
-    <!-- Content -->
-    <div class="relative z-10 min-h-screen flex flex-col">
-      <!-- Top bar -->
-      <header class="h-14 flex justify-between items-center px-6">
-        <NuxtLink to="/" class="flex items-center gap-2 text-white">
-          <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-            <Icon name="lucide:briefcase" class="w-4 h-4 text-white" />
-          </div>
-          <span class="font-semibold text-base">Portfolio</span>
+  <div class="min-h-screen bg-background">
+    <!-- Top bar -->
+    <header class="border-b border-border">
+      <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+        <NuxtLink to="/" class="flex items-center gap-2 text-foreground hover:text-foreground/80 transition-colors">
+          <Icon name="lucide:briefcase" class="w-5 h-5 text-primary" />
+          <span class="font-semibold">Portiva</span>
         </NuxtLink>
-      </header>
 
-      <!-- Main content -->
-      <main class="flex-1 flex items-center justify-center p-4">
-        <slot />
-      </main>
+        <!-- Theme toggle -->
+        <button
+          type="button"
+          class="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          @click="toggleTheme"
+        >
+          <Icon v-if="colorMode.value === 'dark'" name="lucide:sun" class="w-5 h-5" />
+          <Icon v-else name="lucide:moon" class="w-5 h-5" />
+        </button>
+      </div>
+    </header>
 
-      <!-- Footer -->
-      <footer class="py-6 text-center text-sm text-white/70">
-        <div class="flex items-center justify-center gap-4">
-          <a href="#" class="hover:text-white transition-colors">Help</a>
-          <a href="#" class="hover:text-white transition-colors">Privacy</a>
-          <a href="#" class="hover:text-white transition-colors">Terms</a>
+    <!-- Main content -->
+    <main class="container mx-auto px-6 py-16 flex items-center justify-center min-h-[calc(100vh-8rem)]">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border">
+      <div class="container mx-auto px-6 py-6">
+        <div class="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+          <a href="#" class="hover:text-foreground transition-colors">Help</a>
+          <a href="#" class="hover:text-foreground transition-colors">Privacy</a>
+          <a href="#" class="hover:text-foreground transition-colors">Terms</a>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
+const colorMode = useColorMode()
+
+function toggleTheme() {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 </script>
-
-<style scoped>
-@keyframes gradient-shift {
-  0%, 100% {
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
-  50% {
-    background-size: 200% 200%;
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient-shift {
-  animation: gradient-shift 15s ease infinite;
-}
-</style>
